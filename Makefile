@@ -13,6 +13,10 @@ current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 NAME = $(current_dir)
 
 
+install:
+	chmod +x /src/train
+	chmod +x /src/serve
+
 build-image:
 	docker build -t ${NAME}:${TAG} -f src/Dockerfile src/
 
