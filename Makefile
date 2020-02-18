@@ -2,6 +2,7 @@ project-name=ml-api-template
 container-name=${project-name}
 python-version=3.7.4
 
+CURRENT_UID := $(shell id -u)
 time-stamp=$(shell date "+%Y-%m-%d-%H%M%S")
 
 install:
@@ -24,19 +25,24 @@ train: build-image
 		-v ${PWD}/ml:/opt/ml \
 		${container-name} train \
 			--project_name ${project-name} \
-			--run_tag ${project-name} \
-			--bucket_name ${storage} \
-			--data_paht /opt/ml/input/data/divorce.csv
+			--data_path /opt/ml/input/data/divorce.csv
 
-local-serve: build-image
+serve: build-image
+	tar -xvzf ml/output/model.tar.gz -C ml/model
 	docker run --rm \
 		-v ${PWD}/ml:/opt/ml \
 		-p 8080:8080 \
 		${container-name} serve \
 			--project_name ${project-name} \
-			--run_tag ${project-name} \
-			--bucket_name ${storage} \
 			--model_server_workers 1
+
+local-ping:
+	curl http://localhost:8080/ping
 
 local-predict:
 	curl --header "Content-Type: application/json" --request POST --data-binary @ml/input/invocation/payload.json http://localhost:8080/invocations
+
+clean:
+	rm -r ml/model/divorce
+	rm -r ml/output/divorce
+	rm ml/output/model.tar.gz
