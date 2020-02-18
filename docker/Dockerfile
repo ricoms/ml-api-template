@@ -23,6 +23,7 @@ ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
 ENV PATH="/opt/program/:${PATH}"
 ENV ML_PREFIX="/opt/ml/"
+ENV ENVIRON="DOCKER"
 
 # Set up the program and config in the image
 COPY src /opt/program
