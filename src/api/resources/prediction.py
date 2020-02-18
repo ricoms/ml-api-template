@@ -1,15 +1,13 @@
 import json
+from pathlib import Path
+from dataclasses import dataclass
 
 import falcon
-
-from services.logger import set_up_logging
-from services.model import load_model, predict
-from services.cloud import get_artifacts
+from utils.logger import logger
+from utils.model import ProjectModel
 
 
-logger = set_up_logging(__name__)
-
-
+@dataclass
 class PredictionService:
     """
         A singleton for holding the model. This simply loads
@@ -17,38 +15,32 @@ class PredictionService:
         It has a predict function that does a prediction based
         on the model and the input data.
     """
-    model = None # Where we keep the model when it's loaded
-
-    def get_model(self):
-        """Get the model object for this instance, loading it if
-        it's not already loaded."""
-        
-        if self.model == None:
-            weights_file = str(constants.MODEL_PATH / "model.joblib")
-            if download(weights_file, 'output/model.joblib'):
-                logger.info('Begin server with weights_file: {}'.format(weights_file))
-                self.model = load_model(weights_file)
-                logger.info('Succesfully load model {}'.format(weights_file))
-            else:
-                logger.info('No weights_file available to begin server.')
-                return None         
-        return self.model
+    def __init__(self, model_base_path: Path):
+        self.model = {}
+        for model_prefix in Path(model_base_path).glob('*'):
+            logger.info(f"Loading model {model_prefix.stem}")
+            model = ProjectModel()
+            model.load(model_prefix)
+            self.model[model_prefix.stem] = model
 
     def on_post(self, request, response):
 
-        if request.content_type == "text/csv":
-            payload = request.stream.read().decode("utf-8")
+        if request.content_type == "application/json":
+            payload = json.loads(request.stream.read().decode("utf-8"))
         else:
-            raise falcon.HTTPUnsupportedMediaType('csv please!')
+            raise falcon.HTTPUnsupportedMediaType('json please!')
 
-        clf = self.get_model()
-        if clf is None:
-            response.status = falcon.HTTP_418
-            response.body = json.dumps({'error': 'weights_file not available!'})
-            raise falcon.HTTPServiceUnavailable('weights_file not available!')
+        ids = []
+        X = []
+        model_name = "divorce"
 
-        preds = predict(payload, clf)
-        logger.info('Generated prediction.')
+        for instance in payload:
+            ids.append(instance["id"])
+            x = [int(i) for i in instance["features"].split(';')]
+            X.append(x)
 
+        preds = self.model[model_name].predict(ids, X)
+
+        logger.info(f'Generated {len(preds)} predictions.')
         response.status = falcon.HTTP_OK
         response.body = json.dumps(preds)
