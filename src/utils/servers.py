@@ -44,7 +44,7 @@ class GunicornServe:
             '-k', 'tornado',
             '-b', 'unix:/tmp/gunicorn.sock',
             '-w', str(self.model_server_workers),
-            f'api.app:MLAPI("{self.name}", "{self.models_path}").setup()'
+            f'api.app:MLAPI("{self.models_path}").setup()'
         ])
 
         pids = {

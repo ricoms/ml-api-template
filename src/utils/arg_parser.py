@@ -11,7 +11,7 @@ from typing import Any, Dict
 class ArgParser(ABC):
 
     def __init__(self):
-        environment = os.environ.get("ENVIRON", "LOCAL")
+        environment = os.environ.get("ENVIRON", "DOCKER")
         config = configparser.ConfigParser()
         config.read('config.ini')
         config = config[environment]
@@ -24,7 +24,7 @@ class ArgParser(ABC):
         self.aws_param_file = self.ml_prefix / "input/config/hyperparameters.json"
         self.run_tag = datetime.datetime \
             .fromtimestamp(time.time()) \
-            .strftime('%Y-%m-%d-%H-%M-%S')
+            .strftime('%Y-%m-%d-%H%M%S')
 
     @abstractmethod
     def get_arguments(self) -> Dict[str, Any]:
@@ -37,7 +37,7 @@ class LocalArgParser(ArgParser):
         parser = argparse.ArgumentParser()
         parser.add_argument(
             '--data_path',
-            default=self.data_prefix / 'training',
+            default=self.data_prefix / 'data.csv',
             type=Path,
             help=f"Path to a local storage (default: \
                 '{str(self.data_prefix / 'training')}')",
@@ -51,21 +51,15 @@ class LocalArgParser(ArgParser):
         )
         parser.add_argument(
             '--project_name',
-            default=self.run_tag,
+            default="",
             type=str,
-            help=f"Run ID (default: '{self.run_tag}')",
+            help="Project name (default: '')",
         )
         parser.add_argument(
             '--run_tag',
             default=self.run_tag,
             type=str,
             help=f"Run ID (default: '{self.run_tag}')",
-        )
-        parser.add_argument(
-            '--bucket_name',
-            type=str,
-            default='',
-            help="Bucket name of a remote storage (default: '')"
         )
         args = parser.parse_args()
 
@@ -84,16 +78,10 @@ class APIArgParser(ArgParser):
                 '{str(self.ml_prefix)}')",
         )
         parser.add_argument(
-            '--bucket_name',
-            type=str,
-            default='',
-            help="Bucket name of a remote storage (default: '')"
-        )
-        parser.add_argument(
             '--project_name',
-            default='teste',
+            default="",
             type=str,
-            help=f"Project name",
+            help="Project name (default: '')",
         )
         parser.add_argument(
             '--run_tag',
@@ -105,13 +93,13 @@ class APIArgParser(ArgParser):
         parser.add_argument(
             '--model_server_workers',
             default=cpu_count,
-            type=Path,
+            type=int,
             help=f" Number of model server workers (default: '{cpu_count}')",
         )
         parser.add_argument(
             '--model_server_timeout',
             default=60,
-            type=Path,
+            type=int,
             help=f"Number of model server workers (default: 60)",
         )
         args = parser.parse_args()
