@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import falcon
 from utils.logger import logger
-from utils.model import ProjectModel
+from services.model import ProjectModel
 
 
 @dataclass
@@ -17,8 +17,9 @@ class PredictionService:
     """
     def __init__(self, model_base_path: Path):
         self.model = {}
-        for model_prefix in Path(model_base_path).glob('*'):
-            logger.info(f"Loading model {model_prefix.stem}")
+        for model_path in Path(model_base_path).glob('*/*.joblib'):
+            logger.info(f"Loading model: '{model_path.parent.stem}'")
+            model_prefix = model_path.parent
             model = ProjectModel()
             model.load(model_prefix)
             self.model[model_prefix.stem] = model
