@@ -1,12 +1,11 @@
 FROM python:3.7-buster
 
-
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
-    libev-dev \
-    wget \
-    python \
-    nginx \
-    ca-certificates \
+    libev-dev=1:4.25-1 \
+    wget=1.20.1-1.1 \
+    python=2.7.16-1 \
+    nginx=1.14.2-2+deb10u1 \
+    ca-certificates=20190110 \
     && rm -rf /var/lib/apt/lists/*
 
 # Here we get all python packages.
