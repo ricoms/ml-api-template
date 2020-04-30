@@ -1,4 +1,4 @@
-![](https://github.com/ricoms/ml-api-template/workflows/Publish%Docker%20image/badge.svg)
+![](https://github.com/ricoms/ml-api-template/workflows/Publish%20Docker%20image/badge.svg)
 
 ## Project Overview
 
