@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict
 
-from matplotlib import pyplot as plt
-
 from utils.files import PickleFile, TarFile
 from utils.logger import logger
 
