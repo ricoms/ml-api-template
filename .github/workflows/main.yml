@@ -83,16 +83,12 @@ jobs:
       - uses: chrislennon/action-aws-cli@v1.1
       - uses: azure/setup-kubectl@v1
         with:
-          version: '1.15'
+          version: '1.15.0'
         id: install
       - run: aws eks --region us-east-1 update-kubeconfig --name temp-eks
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #   - name: Create KUBE Config Variable
-    #     run: |
-    #       export KUBE_CONFIG=$(cat $HOME/.kube/config | base64)
-    #       echo "::set-env name=KUBE_CONFIG_DATA::$KUBE_CONFIG"
       - name: apply config map
         run: |
           kubectl apply -f aws/aws-auth-cm.yaml
