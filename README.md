@@ -38,3 +38,13 @@ This project operationalizes machine learning microservice using [kubernetes](ht
 * Setup and Configure Kubernetes locally
 * Create Flask app in Container
 * Run via kubectl
+
+### Some visualizations
+
+By setting up `aws` Cloudformation you should have something like this:
+
+![](https://github.com/ricoms/ml-api-template/static/cloudformation.png)
+
+The cluster should be visible at the AWS EKS console:
+
+![](https://github.com/ricoms/ml-api-template/static/eks-cluster.png)
