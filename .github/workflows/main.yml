@@ -24,18 +24,21 @@ jobs:
 
     - name: Install linting dependencies
       run: |
+        python3 -m venv venv
+        . venv/bin/activate
         # Install hadolint
         wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
           chmod +x /bin/hadolint
-
         pip install flake8==3.7.9
 
     - name: Run lint
       run: |
+        . venv/bin/activate
         make lint
 
     - name: Install test dependencies
       run: |
+        . venv/bin/activate
         pip install pytest==5.4.1
         make install
 
