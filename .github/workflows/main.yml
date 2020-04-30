@@ -9,26 +9,29 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
     steps:
     - name: Check out the repo
       uses: actions/checkout@v2
 
-    - name: install dependencies
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
       run: |
-        python3 -m venv venv
-        . venv/bin/activate
         make install
+
         # Install hadolint
         wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
-        chmod +x /bin/hadolint
+          chmod +x /bin/hadolint
 
-        # This is a linter for Python source code linter: https://www.pylint.org/
-        # This should be run from inside a virtualenv
-        pip install flake8
-
-    - name: run lint
+    - name: Run lint
       run: |
-        . venv/bin/activate
         make lint
 
     - name: Push to GitHub Packages
@@ -40,21 +43,6 @@ jobs:
         repository: ricoms/ml-api-template/divorce-evaluator
         tag_with_ref: true
 
-    # - name: Set up Python ${{ matrix.python-version }}
-    #   uses: actions/setup-python@v1
-    #   with:
-    #     python-version: ${{ matrix.python-version }}
-    # - name: Install dependencies
-    #   run: |
-    #     python -m pip install --upgrade pip
-    #     pip install -r requirements.txt
-    # - name: Lint with flake8
-    #   run: |
-    #     pip install flake8
-    #     # stop the build if there are Python syntax errors or undefined names
-    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     # - name: Test with pytest
     #   run: |
     #     pip install pytest
