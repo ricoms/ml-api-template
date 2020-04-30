@@ -22,17 +22,27 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
+    - name: Install linting dependencies
       run: |
-        make install
-
         # Install hadolint
         wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
           chmod +x /bin/hadolint
 
+        pip install flake8==3.7.9
+
     - name: Run lint
       run: |
         make lint
+
+    - name: Install test dependencies
+      run: |
+        pip install pytest==5.4.1
+        make install
+
+    # - name: Test with pytest
+    #   run: |
+    #     pip install pytest
+    #     pytest
 
     - name: Push to GitHub Packages
       uses: docker/build-push-action@v1
@@ -42,8 +52,3 @@ jobs:
         registry: docker.pkg.github.com
         repository: ricoms/ml-api-template/divorce-evaluator
         tag_with_ref: true
-
-    # - name: Test with pytest
-    #   run: |
-    #     pip install pytest
-    #     pytest
