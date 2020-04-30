@@ -1,3 +1,10 @@
+## The Makefile includes instructions on environment setup and lint tests
+# Create and activate a virtual environment
+# Install dependencies in requirements.txt
+# Dockerfile should pass hadolint
+# app.py should pass pylint
+# (Optional) Build a simple integration test
+
 project-name=ml-api-template
 container-name=${project-name}
 python-version=3.7.4
@@ -5,12 +12,32 @@ python-version=3.7.4
 CURRENT_UID := $(shell id -u)
 time-stamp=$(shell date "+%Y-%m-%d-%H%M%S")
 
-install:
-	sudo apt-get install unrar
+# install:
+# 	sudo apt-get install unrar
 
 setup:
-	chmod +x /src/train
-	chmod +x /src/serve
+	# Create python virtualenv & source it
+	# source ~/.devops/bin/activate
+	python3 -m venv ~/.devops
+
+install:
+	# This should be run from inside a virtualenv
+	pip install --upgrade pip && \
+		pip install -r requirements.txt
+
+test:
+	# Additional, optional, tests could go here
+	# python -m pytest -vv --cov=myrepolib tests/*.py
+	# python -m pytest --nbval notebook.ipynb
+
+lint:
+	# See local hadolint install instructions:   https://github.com/hadolint/hadolint
+	# This is linter for Dockerfiles
+	hadolint Dockerfile
+	# stop the build if there are Python syntax errors or undefined names
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+	# exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 build-image:
 	docker build -f Dockerfile -t ${container-name} .
