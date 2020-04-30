@@ -18,3 +18,4 @@ scipy==1.4.1
 h5py==2.10.0
 PyYAML==5.1.2
 dask[dataframe]==2.3.0
+pillow>=6.2.2
