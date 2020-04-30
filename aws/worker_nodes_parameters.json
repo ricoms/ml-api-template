@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "EnvironmentName",
+        "ParameterValue": "DivorceProject"
+    },
+    {
+        "ParameterKey": "SshKey",
+        "ParameterValue": "rico-uda-proj"
+    },
+    {
+        "ParameterKey":"DesiredInstances",
+        "ParameterValue": "3"
+    }
+]
