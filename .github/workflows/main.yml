@@ -51,9 +51,7 @@ jobs:
       #     pytest
 
   build-and-push:
-    needs: |
-      lint-test
-      python-test
+    needs: [lint-test, python-test]
     runs-on: ubuntu-latest
     steps:
       - name: Push to GitHub Packages
