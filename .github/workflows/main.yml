@@ -13,6 +13,24 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v2
 
+    - name: install dependencies
+      run: |
+        python3 -m venv venv
+        . venv/bin/activate
+        make install
+        # Install hadolint
+        wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+        chmod +x /bin/hadolint
+
+        # This is a linter for Python source code linter: https://www.pylint.org/
+        # This should be run from inside a virtualenv
+        pip install flake8
+
+    - name: run lint
+      run: |
+        . venv/bin/activate
+        make lint
+
     - name: Push to GitHub Packages
       uses: docker/build-push-action@v1
       with:
