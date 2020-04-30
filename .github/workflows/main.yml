@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+    #   - run: ./setup_test_infrastructure.sh
 
   lint-test:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Install linting dependencies
         run: |
           # Install hadolint
@@ -33,6 +35,7 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
@@ -54,6 +57,7 @@ jobs:
     needs: [lint-test, python-test]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
