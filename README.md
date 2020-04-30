@@ -48,3 +48,7 @@ By setting up `aws` Cloudformation you should have something like this:
 The cluster should be visible at the AWS EKS console:
 
 ![](https://github.com/ricoms/ml-api-template/blob/master/static/eks-cluster.png)
+
+And the nodegroup machines are visible at the EC2 console:
+
+![](https://github.com/ricoms/ml-api-template/blob/master/static/ec2.png)
