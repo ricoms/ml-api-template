@@ -13,7 +13,7 @@ setup:
 	chmod +x /src/serve
 
 build-image:
-	docker build -f docker/Dockerfile -t ${container-name} .
+	docker build -f Dockerfile -t ${container-name} .
 
 data:
 	wget https://archive.ics.uci.edu/ml/machine-learning-databases/00497/divorce.rar -P ml/input/data
