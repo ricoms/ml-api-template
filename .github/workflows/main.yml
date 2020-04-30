@@ -81,46 +81,36 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: chrislennon/action-aws-cli@v1.1
+      - uses: azure/setup-kubectl@v1
+        with:
+          version: '1.15'
+        id: install
       - run: aws eks --region us-east-1 update-kubeconfig --name temp-eks
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #   - name: Create KUBE Config Variable
+    #     run: |
+    #       export KUBE_CONFIG=$(cat $HOME/.kube/config | base64)
+    #       echo "::set-env name=KUBE_CONFIG_DATA::$KUBE_CONFIG"
       - name: apply config map
-        uses: steebchen/kubectl@master
-        env:
-            KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: apply -f aws/aws-auth-cm.yaml
+        run: |
+          kubectl apply -f aws/aws-auth-cm.yaml
       - name: set image
-        uses: steebchen/kubectl@master
-        env:
-            KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: set image deployments/divorce-evaluator divorce-evaluator=docker.pkg.github.com/ricoms/ml-api-template/divorce-evaluator:latest
+        run: |
+          kubectl set image deployments/divorce-evaluator divorce-evaluator=docker.pkg.github.com/ricoms/ml-api-template/divorce-evaluator:latest
       - name: apply deployment
-        uses: steebchen/kubectl@master
-        env:
-            KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: apply -f aws/deployment.yml
+        run: |
+          kubectl apply -f aws/deployment.yml
       - name: get nodes
-        uses: steebchen/kubectl@master
-        env:
-            KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: get nodes
+        run: |
+          kubectl get nodes
       - name: get pods
-        uses: steebchen/kubectl@master
-        env:
-            KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: get pods
+        run: |
+          kubectl get pods
       - name: verify deployment
-        uses: steebchen/kubectl@master
-        env:
-            KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        with:
-          args: '"rollout status deployment/divorce-prediction"'
+        run: |
+          kubectl rollout status deployment/divorce-prediction
       - run: aws cloudformation update-stack --stack-name divorce-nodes --template-body file://aws/worker_nodes.yml --parameters file://aws/worker_nodes_parameters.json --capabilities CAPABILITY_NAMED_IAM
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
