@@ -6,50 +6,61 @@ on:
       - master
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+  lint-test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install linting dependencies
+        run: |
+          # Install hadolint
+          sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
+          sudo chmod +x /bin/hadolint
+          pip install flake8==3.7.9
+
+      - name: Run lint
+        run: |
+          make lint
+
+  python-test:
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
-
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Install test dependencies
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install pytest==5.4.1
+          make install
 
-    - name: Install linting dependencies
-      run: |
-        # Install hadolint
-        sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
-        sudo chmod +x /bin/hadolint
-        pip install flake8==3.7.9
+      # - name: Test with pytest
+      #   run: |
+      #     pip install pytest
+      #     pytest
 
-    - name: Run lint
-      run: |
-        make lint
-
-    - name: Install test dependencies
-      run: |
-        python3 -m venv venv
-        . venv/bin/activate
-        pip install pytest==5.4.1
-        make install
-
-    # - name: Test with pytest
-    #   run: |
-    #     pip install pytest
-    #     pytest
-
-    - name: Push to GitHub Packages
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: ricoms/ml-api-template/divorce-evaluator
-        tag_with_ref: true
+  build-and-push:
+    needs: |
+      lint-test
+      python-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ricoms/ml-api-template/divorce-evaluator
+          tag_with_ref: true
