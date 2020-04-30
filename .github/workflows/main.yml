@@ -95,21 +95,26 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: set image
-        run: |
-          kubectl set image deployments/divorce-evaluator divorce-evaluator=docker.pkg.github.com/ricoms/ml-api-template/divorce-evaluator:latest
-      - name: apply deployment
-        run: |
-          kubectl apply -f aws/deployment.yml
-      - name: get nodes
-        run: |
-          kubectl get nodes
-      - name: get pods
-        run: |
-          kubectl get pods
-      - name: verify deployment
-        run: |
-          kubectl rollout status deployment/divorce-prediction
+      - run: kubectl set image deployments/divorce-evaluator divorce-evaluator=docker.pkg.github.com/ricoms/ml-api-template/divorce-evaluator:${{ github.sha }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - run: kubectl apply -f aws/deployment.yml
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - run: kubectl get nodes
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - run: kubectl get pods
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - run: kubectl rollout status deployment/divorce-evaluator
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - run: aws cloudformation update-stack --stack-name divorce-nodes --template-body file://aws/worker_nodes.yml --parameters file://aws/worker_nodes_parameters.json --capabilities CAPABILITY_NAMED_IAM
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
