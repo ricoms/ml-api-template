@@ -43,8 +43,8 @@ This project operationalizes machine learning microservice using [kubernetes](ht
 
 By setting up `aws` Cloudformation you should have something like this:
 
-![](https://github.com/ricoms/ml-api-template/static/cloudformation.png)
+![](https://github.com/ricoms/ml-api-template/tree/master/static/cloudformation.png)
 
 The cluster should be visible at the AWS EKS console:
 
-![](https://github.com/ricoms/ml-api-template/static/eks-cluster.png)
+![](https://github.com/ricoms/ml-api-template/tree/master/static/eks-cluster.png)
