@@ -73,7 +73,7 @@ class APIArgParser(ArgParser):
         parser = argparse.ArgumentParser()
         parser.add_argument(
             '--model_base_path',
-            default=self.ml_prefix,
+            default=self.proj_prefix,
             type=Path,
             help=f"Path to a local storage (default: \
                 '{str(self.ml_prefix)}')",
