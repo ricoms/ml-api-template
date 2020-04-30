@@ -95,7 +95,8 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: kubectl set image deployments/divorce-evaluator divorce-evaluator=docker.pkg.github.com/ricoms/ml-api-template/divorce-evaluator:${{ github.sha }}
+      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      - run: kubectl set image deployments/divorce-evaluator divorce-evaluator=ricoms/ml-api-template/divorce-evaluator:latest
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
