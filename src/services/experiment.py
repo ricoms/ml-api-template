@@ -1,13 +1,9 @@
-import csv
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-import pandas as pd
 from sklearn.model_selection import train_test_split
-
-from utils.logger import logger
 
 from .artifacts import ExperimentArtifacts
 
@@ -28,9 +24,9 @@ class Experiment:
         self.X_train, self.X_validation, self.y_train, self.y_validation = train_test_split(
             self.X,
             self.y,
-            train_size = self.training_portion,
-            random_state = self.random_state,
-            stratify = self.y,
+            train_size=self.training_portion,
+            random_state=self.random_state,
+            stratify=self.y,
         )
 
     def train(self):

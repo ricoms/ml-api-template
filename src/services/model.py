@@ -1,17 +1,12 @@
-import pickle
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 
 import joblib
-import numpy as np
 from sklearn import svm
 from sklearn.base import BaseEstimator
-from sklearn.feature_selection import SelectKBest, chi2, f_regression
+from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.pipeline import Pipeline
 
-from utils.files import JsonFile, PickleFile
 from utils.logger import logger
 
 
@@ -45,8 +40,8 @@ class ProjectModel(MLModel):
             self.model = joblib.load(self.model_path)
         except FileExistsError as e:
             logger.error(e)
-        except:
-            raise
+        except Exception as e:
+            raise e
         return self.model
 
     def __build_model(self):
@@ -63,7 +58,8 @@ class ProjectModel(MLModel):
             svc__C=.1,
         )
 
-    def train(self,
+    def train(
+        self,
         X_train,
         y_train,
         X_validation,

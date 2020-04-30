@@ -1,18 +1,16 @@
-import sys
 import json
 import pickle
 import tarfile
-import subprocess
-from io import StringIO
 from abc import ABC, abstractmethod
-from typing import Dict
+from io import StringIO
 from pathlib import Path
+from typing import Dict
 
-import yaml
 import dask.dataframe as dd
-from pandas import read_csv
-from dask.delayed import delayed
+import yaml
 from dask.dataframe import from_delayed
+from dask.delayed import delayed
+from pandas import read_csv
 
 from .logger import logger
 
@@ -68,6 +66,7 @@ class JsonFile(BaseFile):
         documents = json.loads(js)
         return documents
 
+
 class YAMLFile(BaseFile):
 
     @staticmethod
@@ -122,19 +121,19 @@ class TarFile:
 
 
 def convert_gz2parquet(directory, output_dir, output_format, output_chunk_sizes):
-	list_of_files = [f for f in Path(str(directory)).glob("*gz")]
-	dfs = [delayed(read_csv)(
-			f, sep=';',
-			header=None,
-			dtype=str,
-			compression='gzip'
-		) for f in list_of_files]
-	df = from_delayed(dfs)
-	npartitions = 1+df.memory_usage().sum().compute() // output_chunk_sizes
-	df = df.repartition(npartitions = npartitions)
+    list_of_files = [f for f in Path(str(directory)).glob("*gz")]
+    dfs = [delayed(read_csv)(
+            f, sep=';',
+            header=None,
+            dtype=str,
+            compression='gzip'
+        ) for f in list_of_files]
+    df = from_delayed(dfs)
+    npartitions = 1+df.memory_usage().sum().compute() // output_chunk_sizes
+    df = df.repartition(npartitions=npartitions)
 
-	logger.info(f"Converting {len(list_of_files)} files into {npartitions} {output_format} files...")
-	method_name = "to_" + output_format
-	method = getattr(df, method_name)
-	method(str(output_dir / f"data.{output_format}"))
-	logger.info(f"...conversion done.")
+    logger.info(f"Converting {len(list_of_files)} files into {npartitions} {output_format} files...")
+    method_name = "to_" + output_format
+    method = getattr(df, method_name)
+    method(str(output_dir / f"data.{output_format}"))
+    logger.info(f"...conversion done.")

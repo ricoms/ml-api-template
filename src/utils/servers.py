@@ -2,7 +2,7 @@ import signal
 import subprocess
 import sys
 from dataclasses import dataclass
-from os import environ, kill, wait
+from os import kill, wait
 
 from .logger import logger
 
@@ -27,7 +27,6 @@ class GunicornServe:
                 pass
 
         sys.exit(0)
-
 
     def start_server(self):
         logger.info(
