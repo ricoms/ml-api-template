@@ -26,10 +26,11 @@ This project operationalizes machine learning microservice using [kubernetes](ht
 
 #### Run in Kubernetes:
 
-`cd aws`
+Having Google Clound configured locally you can run the previous script to create a cluster:
 
-`./create_cluster.sh`
-
+```
+./create_cluster.sh
+```
 1. Add and commit your changes:
 
 ```
