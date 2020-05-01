@@ -17,7 +17,7 @@ kind: Deployment
 metadata:
   name: divorce-evaluator
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 1
