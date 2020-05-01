@@ -116,7 +116,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ricoms/ml-api-template/divorce-evaluator
+          repository: ${{ github.repository }}/$NAME
           tag_with_sha: true
 
       # Setup gcloud CLI
@@ -141,6 +141,7 @@ jobs:
       # Deploy the Docker image to the GKE cluster
       - name: Deploy
         run: |-
+          echo $***GITHUB_SHA*** | cut -c1-7
           ./kustomize edit set image docker.pkg.github.com/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:sha-$(echo ${GITHUB_SHA} | cut -c1-7)
           ./kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/$IMAGE
