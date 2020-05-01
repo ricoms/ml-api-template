@@ -28,6 +28,7 @@ env:
   GKE_CLUSTER: capstone-eks
   GKE_ZONE: us-central1
   IMAGE: divorce-evaluator
+  SHORTSHA: $(git rev-parse --short=7 ${{ github.sha }})
 
 jobs:
   docker-lint:
@@ -117,7 +118,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           repository: ricoms/ml-api-template/divorce-evaluator
-          tag_with_ref: true
+          tag_with_sha: true
 
       # Setup gcloud CLI
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
@@ -141,7 +142,7 @@ jobs:
       # Deploy the Docker image to the GKE cluster
       - name: Deploy
         run: |-
-          ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+          ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:sha-$SHORTSHA
           ./kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/$IMAGE
           kubectl get services -o wide
