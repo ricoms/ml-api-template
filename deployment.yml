@@ -15,7 +15,7 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: gke-test
+  name: divorce-evaluator
 spec:
   replicas: 1
   strategy:
@@ -26,10 +26,10 @@ spec:
   template:
     metadata:
       labels:
-        app: gke-test
+        app: divorce-evaluator
     spec:
       containers:
-      - name: gke-test
+      - name: divorce-evaluator
         image: docker.pkg.github.com/PROJECT_ID/IMAGE:TAG
         ports:
         - containerPort: 5000
