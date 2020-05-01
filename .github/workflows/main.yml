@@ -116,7 +116,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/$NAME
+          repository: ricoms/ml-api-template/divorce-evaluator
           tag_with_sha: true
 
       # Setup gcloud CLI
