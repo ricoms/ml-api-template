@@ -28,7 +28,7 @@ env:
   GKE_CLUSTER: capstone-eks
   GKE_ZONE: us-central1
   IMAGE: divorce-evaluator
-  SHORTSHA: $(git rev-parse --short=7 ${{ github.sha }})
+  SHORTSHA: $(shell git rev-parse --verify HEAD | sed -r 's/(.{7}).*/\1/g')
 
 jobs:
   docker-lint:
