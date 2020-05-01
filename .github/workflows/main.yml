@@ -1,122 +1,147 @@
-name: Publish Docker image
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Build and Deploy to GKE
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'Dockerfile'
+      - 'src/**'
+      - '.github/**'
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: capstone-eks
+  GKE_ZONE: us-central1
+  IMAGE: divorce-evaluator
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-    #   - run: ./setup_test_infrastructure.sh
+  docker-lint:
+    name: Hadolint Dockerfile
+    runs-on: macOS-latest
+    timeout-minutes: 30
 
-  lint-test:
-    needs: setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run hadolint
+        run: |
+          brew install hadolint
+          hadolint ./Dockerfile | tee -a hadolint_lint.txt
+          lintErrors=$(stat -f%z hadolint_lint.txt)
+          if [ "$lintErrors" -gt "0" ]; then
+              echo "Errors have been found, please see below"
+              cat hadolint_lint.txt
+              exit 1
+          else
+              echo "There are no erros found on Dockerfile!!"
+          fi
+
+  python-lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install linting dependencies
-        run: |
-          python3 -m venv venv
-          . venv/bin/activate
-          # Install hadolint
-          sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
-          sudo chmod +x /bin/hadolint
-          pip install flake8==3.7.9
 
-      - name: Run lint
+      - name: Run linting
         run: |
-          . venv/bin/activate
-          make lint
+          pip install flake8==3.7.9
+          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   python-test:
-    needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install test dependencies
+
+      - name: Run test
         run: |
           python3 -m venv venv
           . venv/bin/activate
           pip install pytest==5.4.1
           make install
+
       # - name: Test with pytest
       #   run: |
       #     pip install pytest
       #     pytest
 
-  build-and-push:
-    needs: [lint-test, python-test]
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    needs: [docker-lint, python-lint, python-test]
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ricoms/ml-api-template/divorce-evaluator
+          repository: ${{ github.actor }}/${{ github.repository }}/$IMAGE
           tag_with_ref: true
 
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: chrislennon/action-aws-cli@v1.1
-      - name: Install kubectl
-        run: |
-          curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-          kubectl version --client
-      - run: aws eks --region us-east-1 update-kubeconfig --name temp-eks
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: kubectl apply -f aws/aws-auth-cm.yaml
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-      - run: kubectl set image deployments/divorce-evaluator divorce-evaluator=ricoms/ml-api-template/divorce-evaluator:latest
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: kubectl apply -f aws/deployment.yml
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: kubectl get nodes
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: kubectl get pods
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: kubectl rollout status deployment/divorce-evaluator
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: aws cloudformation update-stack --stack-name divorce-nodes --template-body file://aws/worker_nodes.yml --parameters file://aws/worker_nodes_parameters.json --capabilities CAPABILITY_NAMED_IAM
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Setup gcloud CLI
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '286.0.0'
+          service_account_email: ${{ secrets.GKE_SA_EMAIL }}
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      # Get the GKE credentials so we can deploy to the cluster
+      - run: |-
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+      # Set up kustomize
+      - name: Set up Kustomize
+        run: |-
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+          # Build the Docker image
+
+      # Deploy the Docker image to the GKE cluster
+      - name: Deploy
+        run: |-
+          ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment/$IMAGE
+          kubectl get services -o wide

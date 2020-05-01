@@ -80,9 +80,9 @@ class APIArgParser(ArgParser):
         )
         parser.add_argument(
             '--project_name',
-            default="",
+            default="divorce-predict",
             type=str,
-            help="Project name (default: '')",
+            help="Project name (default: 'divorce-predict')",
         )
         parser.add_argument(
             '--run_tag',
