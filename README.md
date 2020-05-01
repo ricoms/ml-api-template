@@ -1,4 +1,4 @@
-![](https://github.com/ricoms/ml-api-template/workflows/Publish%20Docker%20image/badge.svg)
+![Build and Deploy to GKE](https://github.com/ricoms/ml-api-template/workflows/Build%20and%20Deploy%20to%20GKE/badge.svg)
 
 ## Project Overview
 
@@ -31,7 +31,7 @@ This project operationalizes machine learning microservice using [kubernetes](ht
 `./create_infrastructure.sh`
 `./create_eks.sh`
 `./create_worker_nodes.sh`
-
+`kubectl apply -f aws/deployment.yml`
 ### Kubernetes Steps
 
 * Setup and Configure Docker locally
