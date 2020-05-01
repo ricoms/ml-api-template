@@ -31,6 +31,7 @@ spec:
       containers:
       - name: divorce-evaluator
         image: docker.pkg.github.com/PROJECT_ID/IMAGE:TAG
+        command: ["python", "serve"]
         ports:
         - containerPort: 5000
         resources:
