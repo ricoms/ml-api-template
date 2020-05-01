@@ -142,7 +142,7 @@ jobs:
       - name: Deploy
         run: |-
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-          ./kustomize edit set image docker.pkg.github.com/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:sha-$(echo ${GITHUB_SHA} | cut -c1-7)
+          ./kustomize edit set image docker.pkg.github.com/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/${{ github.repository }}/divorce-evaluator:sha-$(echo ${GITHUB_SHA} | cut -c1-7)
           ./kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/$IMAGE
           kubectl get services -o wide
