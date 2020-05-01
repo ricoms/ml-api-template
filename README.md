@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project shows how to operationalize a Machine Learning Microservice API.
+This project shows how to operationalize a Machine Learning Microservice API with GKE.
 
 For this example I'm using the dataset "Divorce Predictors data set Data Set" publicly available [here](https://archive.ics.uci.edu/ml/datasets/Divorce+Predictors+data+set).
 
@@ -28,27 +28,38 @@ This project operationalizes machine learning microservice using [kubernetes](ht
 
 `cd aws`
 
-`./create_infrastructure.sh`
-`./create_eks.sh`
-`./create_worker_nodes.sh`
-`kubectl apply -f aws/deployment.yml`
-### Kubernetes Steps
+`./create_cluster.sh`
 
-* Setup and Configure Docker locally
-* Setup and Configure Kubernetes locally
-* Create Flask app in Container
-* Run via kubectl
+1. Add and commit your changes:
 
-### Some visualizations
+```
+$ git add .
+$ git commit -m "<change-model>"
+```
 
-By setting up `aws` Cloudformation you should have something like this:
+2. Push to the `master` branch:
 
-![](https://github.com/ricoms/ml-api-template/blob/master/static/cloudformation.png)
+```
+$ git push -u origin master
+```
 
-The cluster should be visible at the AWS EKS console:
+3. View the GitHub Actions Workflow by selecting the `Actions` tab at the top of your repository on GitHub. Then click on the `Build and Deploy to GKE` element to see the details.
 
-![](https://github.com/ricoms/ml-api-template/blob/master/static/eks-cluster.png)
+When service is online obtain its `ingress ip`:
+```
+kubectl get service divorce-evaluator-service --output yaml
+```
 
-And the nodegroup machines are visible at the EC2 console:
+Then you should be able to connect to its health status (`http://35.238.67.202:8080/ping`) in which you should obtain the answer: `{"data": {"status": "ok"}}`
 
-![](https://github.com/ricoms/ml-api-template/blob/master/static/ec2.png)
+Or submit a request with provided payload:
+
+```
+curl --header "Content-Type: application/json" --request POST --data-binary @ml/input/invocation/payload.json http://35.238.67.202:8080/invocations
+```
+
+### Some visualization
+
+After succesfully applying the deployment at gke cluster I obtained the following terminal screen:
+
+![](https://github.com/ricoms/ml-api-template/blob/master/static/evaluator-service-and-predict.png)
