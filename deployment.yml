@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: divorce-evaluator
-        image: docker.pkg.github.com/PROJECT_ID/IMAGE:TAG
+        image: gcr.io/PROJECT_ID/IMAGE:TAG
         command: ["serve"]
         ports:
         - containerPort: 8080
