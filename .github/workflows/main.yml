@@ -141,7 +141,7 @@ jobs:
       # Deploy the Docker image to the GKE cluster
       - name: Deploy
         run: |-
-          ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:sha-$(echo ${GITHUB_SHA} | cut -c1-7)
+          ./kustomize edit set image docker.pkg.github.com/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/ricoms/$PROJECT_ID/$IMAGE:sha-$(echo ${GITHUB_SHA} | cut -c1-7)
           ./kustomize build . | kubectl apply -f -
           kubectl rollout status deployment/$IMAGE
           kubectl get services -o wide
