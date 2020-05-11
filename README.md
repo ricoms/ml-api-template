@@ -14,7 +14,13 @@ Below are some images that show the deployment on AWS:
 
 ![](https://github.com/ricoms/ml-api-template/blob/master/static/awsEKS.png)
 
-This project uses an update policy of AutoScalingRollingUpdate deployment strategy available on Kubernetes.
+This project uses an update policy of AutoScalingRollingUpdate deployment strategy available on Kubernetes, defined at the `aws/app-deployment.yml`
+
+Also, below is the project that ran on my Jenkins server:
+
+![](https://github.com/ricoms/ml-api-template/blob/master/static/jenkins.png)
+
+
 
 ## 1 Software Need/Solution
 
