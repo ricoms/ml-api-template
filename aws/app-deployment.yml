@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: capstone-app
@@ -12,9 +12,8 @@ spec:
       app: capstone-app
   strategy:
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -24,6 +23,30 @@ spec:
       - image: ricoms858/divorce-predictor:latest
         imagePullPolicy: Always
         name: capstone-app
+        command: ["serve"]
         ports:
         - containerPort: 8080
-          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 100m
+        livenessProbe:
+          httpGet:
+            path: /health-check/liveness
+            port: 8080
+            httpHeaders:
+             - name: Custom-Header
+               value: Awesome
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+            httpHeaders:
+            - name: Custom-Header
+              value: Awesome
+          initialDelaySeconds: 90
+          periodSeconds: 20
+          failureThreshold: 30
