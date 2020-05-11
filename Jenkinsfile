@@ -1,14 +1,14 @@
 node {
     stage('Checking out git repo') {
-      echo 'Checkout...'
+      echo 'Checkout'
       checkout scm
     }
     stage('Linting') {
-        echo 'Linting...'
+        echo 'Linting'
         sh 'docker run --rm -i hadolint/hadolint:v1.17.6-3-g8da4f4e-alpine < Dockerfile'
     }
     stage('Build image') {
-        echo 'Building Docker image...'
+        echo 'Building Docker image'
         sh 'docker build -f Dockerfile -t ricoms858/divorce-predictor .'
     }
     stage('Push image') {
@@ -22,7 +22,6 @@ node {
         dir ('./') {
             withAWS(credentials: 'personal-devops', region: 'us-east-1') {
                 sh "aws eks --region us-east-1 update-kubeconfig --name CapstoneEKS"
-                sh "kubectl describe configmap -n kube-system aws-auth"
                 sh "kubectl apply -f aws/aws-auth-cm.yaml"
                 sh "kubectl apply -f aws/app-deployment.yml"
                 sh "kubectl get nodes"
