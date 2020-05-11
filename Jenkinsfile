@@ -13,7 +13,7 @@ node {
     }
     stage('Push image') {
         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]){
-            sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
+            sh 'docker login -u ${dockerHubUser} -p ${dockerHubPassword}'
             sh 'docker tag ricoms858/divorce-predictor ricoms858/divorce-predictor'
             sh 'docker push ricoms858/divorce-predictor'
         }
