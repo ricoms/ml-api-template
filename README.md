@@ -59,6 +59,8 @@ Or submit a request with provided payload:
 curl --header "Content-Type: application/json" --request POST --data-binary @ml/input/invocation/payload.json http://35.238.67.202:8080/invocations
 ```
 
+Note: IP address above might not be online now, it must be replaced for an online version of this project
+
 ### Some visualization
 
 After succesfully applying the deployment at gke cluster I obtained the following terminal screen:

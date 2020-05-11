@@ -6,7 +6,7 @@
 # (Optional) Build a simple integration test
 
 project-name=ml-api-template
-container-name=${project-name}
+container-name=divorce-predictor
 python-version=3.7.4
 
 CURRENT_UID := $(shell id -u)
