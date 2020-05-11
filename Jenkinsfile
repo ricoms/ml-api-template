@@ -25,6 +25,7 @@ node {
                 sh "kubectl apply -f aws/aws-auth-cm.yaml"
                 sh "kubectl set image deployments/capstone-app capstone-app=ricoms858/divorce-predictor:latest"
                 sh "kubectl apply -f aws/app-deployment.yml"
+                sh "kubectl apply -f aws/service.yml"
                 sh "kubectl get nodes"
                 sh "kubectl get pods"
             }
