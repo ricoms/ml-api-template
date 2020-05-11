@@ -1,0 +1,15 @@
+
+[
+    {
+        "ParameterKey": "EnvironmentName",
+        "ParameterValue": "UdacityCapstoneProject"
+    },
+    {
+        "ParameterKey": "SshKey",
+        "ParameterValue": "rico-uda-proj"
+    },
+    {
+        "ParameterKey":"DesiredInstances",
+        "ParameterValue": "3"
+    }
+]

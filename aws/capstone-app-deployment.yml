@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-app
+  labels:
+    app: capstone-app
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: capstone-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: capstone-app
+    spec:
+      containers:
+      - image: ricoms858/divorce-predictor:latest
+        imagePullPolicy: Always
+        name: capstone-app
+        ports:
+        - containerPort: 8080
+          protocol: TCP
