@@ -63,7 +63,7 @@ local-ping:
 	curl http://localhost:8080/ping
 
 local-predict:
-	curl --header "Content-Type: application/json" --request POST --data-binary @ml/input/invocation/payload.json http://localhost:8080/invocations
+	curl --header "Content-Type: application/json" --request POST --data-binary @ml/input/invocation/payload.json http://a31c3822658cd4f8da1ca81e3b945596-1685130153.us-east-1.elb.amazonaws.com:8080/invocations
 
 clean:
 	rm -r ml/model/divorce

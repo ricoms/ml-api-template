@@ -20,7 +20,15 @@ Also, below is the project that ran on my Jenkins server:
 
 ![](https://github.com/ricoms/ml-api-template/blob/master/static/jenkins.png)
 
+And below is the application online, available at chrome:
 
+![](https://github.com/ricoms/ml-api-template/blob/master/static/chrome_address.png)
+
+And below are images of its main funcionality, to ping and provide predictions from the model:
+
+![](https://github.com/ricoms/ml-api-template/blob/master/static/terminal_call.png)
+
+![](https://github.com/ricoms/ml-api-template/blob/master/static/terminal_request_prediction.png)
 
 ## 1 Software Need/Solution
 
