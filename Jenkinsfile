@@ -4,6 +4,9 @@ node {
       echo 'Checkout...'
       checkout scm
     }
+    stage('Install requirements') {
+        sh 'apk add docker'
+    }
     stage('Linting') {
         echo 'Linting...'
         sh 'docker run --rm -i hadolint/hadolint:v1.17.6-3-g8da4f4e-alpine < Dockerfile'
