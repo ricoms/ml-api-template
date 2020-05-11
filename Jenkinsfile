@@ -20,7 +20,7 @@ node {
     }
     stage('Deploy to EKS Kubernetes') {
         withAWS(credentials: 'personal-devops', region: 'us-east-1') {
-            sh "aws eks update-kubeconfig --name CapstoneEKS"
+            sh "aws eks --region us-east-1 update-kubeconfig --name CapstoneEKS"
             sh "kubectl apply -f aws/aws-auth-cm.yaml"
             sh "kubectl set image deployments/capstone-app capstone-app=${registry}:latest"
             sh "kubectl apply -f aws/capstone-app-deployment.yml"
