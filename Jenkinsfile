@@ -13,23 +13,16 @@ node {
         sh 'docker build -f Dockerfile -t ${registry} .'
     }
     stage('Push image') {
-        withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]){
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]){
             sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
             sh 'docker tag ${registry} ${registry}'
             sh 'docker push ${registry}'
         }
-        sh 'make upload'
     }
-    stage('set current kubectl context') {
-        dir ('./') {
-            withAWS(credentials: 'aws-credentials', region: 'us-east-1') {
-                sh "aws eks --region us-east-2 update-kubeconfig --name CapstoneEKS"
-            }
-        }
-    }
-    stage('Deploy Kubernetes') {
+    stage('Deploy to EKS Kubernetes') {
         dir ('./') {
             withAWS(credentials: 'personal-devops', region: 'us-east-1') {
+                sh "aws eks --region us-east-2 update-kubeconfig --name CapstoneEKS"
                 sh "kubectl apply -f aws/aws-auth-cm.yaml"
                 sh "kubectl set image deployments/capstone-app capstone-app=${registry}:latest"
                 sh "kubectl apply -f aws/capstone-app-deployment.yml"
