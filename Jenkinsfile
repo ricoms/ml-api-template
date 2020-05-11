@@ -1,5 +1,4 @@
 node {
-    def registry = 'ricoms858/divorce-predictor'
     stage('Checking out git repo') {
       echo 'Checkout...'
       checkout scm
@@ -10,13 +9,13 @@ node {
     }
     stage('Build image') {
         echo 'Building Docker image...'
-        sh 'docker build -f Dockerfile -t ${registry} .'
+        sh 'docker build -f Dockerfile -t ricoms858/divorce-predictor .'
     }
     stage('Push image') {
         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]){
             sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
-            sh 'docker tag ${registry} ${registry}'
-            sh 'docker push ${registry}'
+            sh 'docker tag ricoms858/divorce-predictor ricoms858/divorce-predictor'
+            sh 'docker push ricoms858/divorce-predictor'
         }
     }
     stage('Deploy to EKS Kubernetes') {
