@@ -24,9 +24,9 @@ install:
 	pipenv install --dev flake8
 
 data:
-	wget https://archive.ics.uci.edu/ml/machine-learning-databases/00497/divorce.rar -P ml/input/data
-	cd ml/input/data && unrar e divorce.rar
-	cd ml/input/data && rm divorce.rar && rm divorce.xlsx
+	wget https://archive.ics.uci.edu/ml/machine-learning-databases/00497/divorce.rar -P ml/input/data/training/
+	cd ml/input/data/training/ && unrar e divorce.rar
+	cd ml/input/data/training/ && rm divorce.rar && rm divorce.xlsx
 
 train: build-image
 	docker run --rm \
