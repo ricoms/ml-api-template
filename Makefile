@@ -62,7 +62,7 @@ test:
 	# python -m pytest --nbval notebook.ipynb
 	
 coverage:
-	pipenv run coverage html
+	pipenv run pytest --cov-report=term-missing --cov=src && pytest --cov-report=html
 
 build-image:
 	docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME} .

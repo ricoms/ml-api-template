@@ -22,15 +22,11 @@ workflows:
         - python-test:
             requires:
                 - download-dependencies
-        - python-coverage:
-            requires:
-                - download-dependencies
         - lint-docker
         - build-and-push-image:
             requires:
                 - lint-python
                 - python-test
-                - python-coverage
                 - lint-docker
             filters:
                 branches:
@@ -93,19 +89,6 @@ jobs:
                 name: Run Application tests
                 command: |
                     make test
-    python-coverage:
-        executor: python-executor
-        steps:
-            - checkout
-            - restore_cache:
-                keys:
-                    - deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - run:
-                name: Test coverage
-                command: |
-                    make coverage
-            - store_artifacts:
-                path: htmlcov
     lint-docker:
         machine: true
         steps:
