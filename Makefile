@@ -31,6 +31,10 @@ lint-python:
 
 lint: lint-docker lint-python
 
+coverage:
+	pipenv run pytest --cov=$(PROJECT_NAME)
+	pipenv run coverage report -m
+	
 data:
 	wget https://archive.ics.uci.edu/ml/machine-learning-databases/00497/divorce.rar -P ml/input/data
 	cd ml/input/data && unrar e divorce.rar
