@@ -42,6 +42,9 @@ clean:
 	rm ml/output/model.tar.gz
 
 
+data-upload:
+	aws s3 sync ml s3://719003640801-workshop-ml-api-template
+
 # CICD commands
 
 lint-docker:
