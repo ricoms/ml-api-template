@@ -6,7 +6,7 @@
 # (Optional) Build a simple integration test
 
 project-name=ml-api-template
-container-name=divorce-predictor
+DOCKER_IMAGE_NAME=workshop-ml-api-template
 python-version=3.8
 
 inputdataconfig_file=ml/input/config/inputdataconfig.json
@@ -32,7 +32,7 @@ train: build-image
 	docker run --rm \
 		-u ${CURRENT_UID}:${CURRENT_UID} \
 		-v ${PWD}/ml:/opt/ml \
-		${container-name} train \
+		${DOCKER_IMAGE_NAME} train \
 			--project_name ${project-name} \
 			--data_path /opt/ml/input/data/training/divorce.csv
 
@@ -62,11 +62,10 @@ test:
 	# python -m pytest --nbval notebook.ipynb
 	
 coverage:
-	pipenv run pytest --cov-report=term-missing --cov=src
 	pipenv run coverage html
 
 build-image:
-	docker build -f Dockerfile -t ${container-name} .
+	docker build -f Dockerfile -t ${DOCKER_IMAGE_NAME} .
 
 check-env-aws:
 ifndef AWS_ACCESS_KEY_ID
