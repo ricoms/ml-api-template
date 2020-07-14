@@ -1,6 +1,6 @@
 FROM python:3.7-buster
 
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
+RUN apt-get update -y && apt-get install -y --no-install-recommends --allow-downgrades \
     libev-dev=1:4.25-1 \
     wget=1.20.1-1.1 \
     python=2.7.16-1 \
@@ -26,12 +26,8 @@ ENV ENVIRON="DOCKER"
 
 # Set up the program and config in the image
 COPY src /opt/program
-RUN mkdir -p /opt/ml/input/data && \
-    mkdir -p /opt/ml/model && \
-    mkdir -p /opt/ml/output
 
 WORKDIR /opt/program
 RUN chmod +x /opt/program/train
-RUN chmod +x /opt/program/serve
 
 EXPOSE 8080
