@@ -71,7 +71,6 @@ jobs:
                 key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
                 paths:
                     - ".venv"
-
     lint-python:
         executor: python-executor
         steps:
@@ -107,7 +106,6 @@ jobs:
                     make coverage
             - store_artifacts:
                 path: htmlcov
-
     lint-docker:
         machine: true
         steps:
@@ -132,7 +130,6 @@ jobs:
                 command: |
                     make release-image DOCKER_SERVER=$DOCKER_SERVER
                     make release-image DOCKER_SERVER=$DOCKER_SERVER IMAGE_TAG_PUSH=latest
-
     training-job:
         executor: aws-cli/default
         steps:

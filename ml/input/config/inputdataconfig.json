@@ -1,0 +1,28 @@
+[
+    {
+        "ChannelName": "raw",
+        "DataSource": {
+            "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://{AWS_PROJECT_BUCKET}/input/data/raw/",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        "ContentType": "bin/parquet",
+        "CompressionType": "None",
+        "InputMode": "File"
+    },
+    {
+        "ChannelName": "training",
+        "DataSource": {
+            "S3DataSource": {
+                "S3DataType": "S3Prefix",
+                "S3Uri": "s3://{AWS_PROJECT_BUCKET}/input/data/training/",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        "ContentType": "bin/parquet",
+        "CompressionType": "None",
+        "InputMode": "File"
+    }
+]
