@@ -38,14 +38,6 @@ workflows:
                     only: master
                 tags:
                     only: /(v[0-9]+\.[0-9]+\.[0-9]+)/
-        - slack-training-approval:
-            requires:
-                - build-and-push-image
-            filters:
-                branches:
-                    only: master
-                tags:
-                    only: /(v[0-9]+\.[0-9]+\.[0-9]+)/
         - approve-training-job:
             type: approval
             requires:
