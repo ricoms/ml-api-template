@@ -7,40 +7,37 @@
 
 project-name=ml-api-template
 container-name=divorce-predictor
-python-version=3.7.4
+python-version=3.8
 
 CURRENT_UID := $(shell id -u)
 time-stamp=$(shell date "+%Y-%m-%d-%H%M%S")
 
-# install:
-# 	sudo apt-get install unrar
-
-setup:
-	# Create python virtualenv & source it
-	# source ~/.devops/bin/activate
-	python3 -m venv ~/.devops
-
 install:
-	# This should be run from inside a virtualenv
-	pip install --upgrade pip && \
-		pip install -r requirements.txt
+	docker pull hadolint/hadolint:v1.17.6-3-g8da4f4e-alpine
+	pipenv install -r requirements.txt --python 3
+	pipenv install --dev flake8
 
 test:
 	# Additional, optional, tests could go here
 	# python -m pytest -vv --cov=myrepolib tests/*.py
 	# python -m pytest --nbval notebook.ipynb
 
-lint:
-	hadolint Dockerfile
-	flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+lint-docker:
+	docker run --rm -i hadolint/hadolint:v1.17.6-3-g8da4f4e-alpine < Dockerfile
 
-build-image:
-	docker build -f Dockerfile -t ${container-name} .
+lint-python:
+	pipenv run flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+	pipenv run flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+lint: lint-docker lint-python
 
 data:
 	wget https://archive.ics.uci.edu/ml/machine-learning-databases/00497/divorce.rar -P ml/input/data
 	cd ml/input/data && unrar e divorce.rar
+	cd ml/input/data && rm divorce.rar && rm divorce.xlsx
+
+build-image:
+	docker build -f Dockerfile -t ${container-name} .
 
 train: build-image
 	docker run --rm \
