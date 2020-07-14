@@ -62,7 +62,7 @@ test:
 	# python -m pytest --nbval notebook.ipynb
 	
 coverage:
-	pipenv run pytest ---cov-report=term-missing --cov=src
+	pipenv run pytest --cov-report=term-missing --cov=src
 	pipenv run coverage html
 
 build-image:
