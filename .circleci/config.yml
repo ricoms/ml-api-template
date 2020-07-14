@@ -19,14 +19,14 @@ workflows:
         - lint-python:
             requires:
                 - download-dependencies
-        - python-test:
+        - test-python:
             requires:
                 - download-dependencies
         - lint-docker
         - build-and-push-image:
             requires:
                 - lint-python
-                - python-test
+                - test-python
                 - lint-docker
             filters:
                 branches:
@@ -78,7 +78,7 @@ jobs:
                 name: Run Application lint
                 command: |
                     make lint-python
-    python-test:
+    test-python:
         executor: python-executor
         steps:
             - checkout
