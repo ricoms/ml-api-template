@@ -20,7 +20,7 @@ class ArgParser(ABC):
         self.proj_prefix = Path(config.get("PROJ_PREFIX", "/opt/program"))
         self.ml_prefix = Path(config.get("ML_PREFIX", "/opt/ml"))
         self.output_prefix = self.ml_prefix / 'output'
-        self.data_prefix = self.ml_prefix / 'data/'
+        self.data_prefix = self.ml_prefix / 'data/training/'
         self.config_prefix = self.ml_prefix / 'input/config'
         self.aws_param_file = self.ml_prefix / "input/config/hyperparameters.json"
         self.run_tag = datetime.datetime \

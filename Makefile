@@ -34,7 +34,7 @@ train: build-image
 		-v ${PWD}/ml:/opt/ml \
 		${container-name} train \
 			--project_name ${project-name} \
-			--data_path /opt/ml/input/data/divorce.csv
+			--data_path /opt/ml/input/data/training/divorce.csv
 
 clean:
 	rm -r ml/model/divorce
