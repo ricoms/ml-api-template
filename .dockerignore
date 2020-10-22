@@ -2,4 +2,5 @@
 */
 !src/
 !src/*
-!requirements.txt
+!Pipfile
+!Pipfile.lock
