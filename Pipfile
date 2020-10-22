@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 pytest-cov = "*"
+pytest = "*"
 
 [packages]
 configparser = "==3.7.4"
