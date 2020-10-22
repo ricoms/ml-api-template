@@ -50,7 +50,7 @@ jobs:
           fi
 
   python-lint:
-    runs-on: python:3.8-buster
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8]
@@ -70,7 +70,7 @@ jobs:
           make lint
 
   python-test:
-    runs-on: python:3.8-buster
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8]
