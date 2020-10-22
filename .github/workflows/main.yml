@@ -94,7 +94,7 @@ jobs:
           make coverage
 
   setup-build-publish-deploy:
-    name: Setup, Build, Publish, and Deploy
+    name: Setup, Build, Publish
     needs: [docker-lint, python-lint, python-test]
     runs-on: ubuntu-latest
 
