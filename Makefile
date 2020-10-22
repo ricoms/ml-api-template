@@ -19,6 +19,7 @@ CURRENT_UID := $(shell id -u)
 time-stamp=$(shell date "+%Y-%m-%d-%H%M%S")
 
 install:
+	pip install --no-cache-dir pipenv==2020.8.13
 	docker pull hadolint/hadolint:v1.17.6-3-g8da4f4e-alpine
 	pipenv install -r requirements.txt --python 3
 	pipenv install --dev flake8
