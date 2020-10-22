@@ -34,7 +34,7 @@ class PredictionService:
             X = df.values
         else:
             raise falcon.HTTPUnsupportedMediaType('json please!')
-        
+
         preds = {}
         for model_name, model in self.model_dict.items():
             logger.info(f'Generated {model_name} predictions.')

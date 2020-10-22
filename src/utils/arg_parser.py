@@ -1,7 +1,6 @@
 import argparse
 import configparser
 import datetime
-import multiprocessing
 import os
 import time
 from abc import ABC, abstractmethod

@@ -1,1 +1,1 @@
-from .model import MLModel, ProjectModel
+from .model import MLModel, ProjectModel # noqa

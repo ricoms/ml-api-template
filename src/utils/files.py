@@ -136,4 +136,4 @@ def convert_gz2parquet(directory, output_dir, output_format, output_chunk_sizes)
     method_name = "to_" + output_format
     method = getattr(df, method_name)
     method(str(output_dir / f"data.{output_format}"))
-    logger.info(f"...conversion done.")
+    logger.info("...conversion done.")
