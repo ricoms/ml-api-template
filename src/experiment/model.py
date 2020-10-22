@@ -12,6 +12,11 @@ from utils.logger import logger
 
 class MLModel(ABC):
 
+    @property
+    @abstractmethod
+    def model_id(self) -> str:
+        pass
+
     @abstractmethod
     def save(self):
         pass
@@ -29,13 +34,17 @@ class MLModel(ABC):
 class ProjectModel(MLModel):
     model: BaseEstimator = None
 
+    @property
+    def model_id(self) -> str:
+        return "divorce"
+
     def save(self, model_prefix):
-        self.model_path = model_prefix / 'model.joblib'
+        self.model_path = model_prefix / self.model_id / 'model.joblib'
         joblib.dump(self.model, self.model_path)
         return self.model_path
 
     def load(self, model_prefix):
-        self.model_path = model_prefix / 'model.joblib'
+        self.model_path = model_prefix / self.model_id / 'model.joblib'
         try:
             self.model = joblib.load(self.model_path)
         except FileExistsError as e:

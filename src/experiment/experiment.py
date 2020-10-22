@@ -11,13 +11,13 @@ from .artifacts import ExperimentArtifacts
 @dataclass
 class Experiment:
     model: Any
-    data_path: Path
+    input_dir: Path
     artifacts_handler: ExperimentArtifacts
     training_portion: float = .8
     random_state: int = 42
 
     def load_data(self):
-        data = np.genfromtxt(self.data_path, delimiter=';', skip_header=1)
+        data = np.genfromtxt(self.input_dir, delimiter=';', skip_header=1)
         self.X, self.y = data[:, :-1], data[:, -1]
 
     def split_data(self):
