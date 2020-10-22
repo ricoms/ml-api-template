@@ -1,0 +1,143 @@
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: evaluate, build and Integrate to GitHub Packages
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'Dockerfile'
+      - 'src/**'
+      - '.github/**'
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: capstone-eks
+  GKE_ZONE: us-central1
+  IMAGE: divorce-evaluator
+
+jobs:
+  docker-lint:
+    name: Hadolint Dockerfile
+    runs-on: macOS-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run hadolint
+        run: |
+          brew install hadolint
+          hadolint ./Dockerfile | tee -a hadolint_lint.txt
+          lintErrors=$(stat -f%z hadolint_lint.txt)
+          if [ "$lintErrors" -gt "0" ]; then
+              echo "Errors have been found, please see below"
+              cat hadolint_lint.txt
+              exit 1
+          else
+              echo "There are no erros found on Dockerfile!!"
+          fi
+  python-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run linting
+        run: |
+          pip install flake8==3.7.9
+          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  python-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run test
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install pytest==5.4.1
+          make install
+      # - name: Test with pytest
+      #   run: |
+      #     pip install pytest
+      #     pytest
+
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    needs: [docker-lint, python-lint, python-test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/divorce-evaluator
+          tag_with_sha: true
+
+      # Setup gcloud CLI
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '286.0.0'
+          service_account_email: ${{ secrets.GKE_SA_EMAIL }}
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      # Get the GKE credentials so we can deploy to the cluster
+      - run: |-
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+      # Set up kustomize
+      - name: Set up Kustomize
+        run: |-
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+          # Build the Docker image
+      # Deploy the Docker image to the GKE cluster
+      - name: Deploy
+        run: |-
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+          ./kustomize edit set image docker.pkg.github.com/PROJECT_ID/IMAGE:TAG=docker.pkg.github.com/${{ github.repository }}/divorce-evaluator:sha-$(echo ${GITHUB_SHA} | cut -c1-7)
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment/$IMAGE
+          kubectl get services -o wide
