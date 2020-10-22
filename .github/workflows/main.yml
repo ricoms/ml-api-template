@@ -24,9 +24,6 @@ on:
       - '.github/**'
 
 env:
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: capstone-eks
-  GKE_ZONE: us-central1
   IMAGE: divorce-evaluator
 
 jobs:
@@ -53,10 +50,10 @@ jobs:
           fi
 
   python-lint:
-    runs-on: ubuntu-latest
+    runs-on: python:3.8-buster
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
 
     steps:
       - name: Checkout
@@ -69,16 +66,14 @@ jobs:
 
       - name: Run linting
         run: |
-          pip install flake8==3.7.9
-          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          make install
+          make lint
 
   python-test:
-    runs-on: ubuntu-latest
+    runs-on: python:3.8-buster
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
 
     steps:
       - name: Checkout
@@ -95,10 +90,8 @@ jobs:
           . venv/bin/activate
           pip install pytest==5.4.1
           make install
-      # - name: Test with pytest
-      #   run: |
-      #     pip install pytest
-      #     pytest
+          make test
+          make coverage
 
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy

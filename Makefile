@@ -68,8 +68,7 @@ lint: lint-docker lint-python
 
 test:
 	# Additional, optional, tests could go here
-	# python -m pytest -vv --cov=myrepolib tests/*.py
-	# python -m pytest --nbval notebook.ipynb
+	pipenv run pytest -v
 	
 coverage:
 	pipenv run pytest --cov-report=term-missing --cov=src && pytest --cov-report=html
