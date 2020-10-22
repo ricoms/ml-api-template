@@ -34,10 +34,20 @@ train: build-image
 		-v ${PWD}/ml:/opt/ml \
 		${DOCKER_IMAGE_NAME} train \
 			--project_name ${project-name} \
-			--data_path /opt/ml/input/data/training/divorce.csv
+			--input_dir /opt/ml/input/data/training/divorce.csv
+
+serve: build-image
+	docker run --rm -it \
+		-v $(PWD)/ml:/opt/ml \
+		-p 8080:8080 \
+		${DOCKER_IMAGE_NAME} \
+			python serve \
+				--num_cpus=1
+
+predict:
+	./scripts/predict.sh ml/input/api/payload.json application/json
 
 clean:
-	rm -r ml/model/divorce
 	rm -r ml/output/divorce
 	rm ml/output/model.tar.gz
 
