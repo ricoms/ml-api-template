@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir pipenv==2020.8.13 \
     && apt-get install -y --no-install-recommends \
         python3-dev=3.7.3-1 \
         libev-dev=1:4.25-1 \
-        nginx=1.14.2-2+deb10u1 \
+        nginx=1.14.2-2+deb10u3 \
     && pipenv install --system --ignore-pipfile --deploy --clear \
     && apt-get remove -y gcc python3-dev libssl-dev \
     && apt-get autoremove -y \
