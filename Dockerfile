@@ -1,16 +1,19 @@
 FROM python:3.8-buster
 
-RUN apt-get update -y && apt-get install -y --no-install-recommends --allow-downgrades \
-    libev-dev=1:4.25-1 \
-    wget=1.20.1-1.1 \
-    python=2.7.16-1 \
-    nginx=1.14.2-2+deb10u1 \
-    ca-certificates=20190110 \
-    && rm -rf /var/lib/apt/lists/*
+LABEL maintainer="ricardo.savii@dafiti.com.br"
 
-# Here we get all python packages.
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY Pipfile Pipfile.lock ./
+RUN pip install --no-cache-dir pipenv==2020.8.13 \
+    && apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        python3-dev=3.7.3-1 \
+        libev-dev=1:4.25-1 \
+        nginx=1.14.2-2+deb10u1 \
+    && pipenv install --system --ignore-pipfile --deploy --clear \
+    && apt-get remove -y gcc python3-dev libssl-dev \
+    && apt-get autoremove -y \
+    && pip uninstall pipenv -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set some environment variables. PYTHONUNBUFFERED keeps Python from
 # buffering our standard output stream, which means that logs can be
