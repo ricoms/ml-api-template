@@ -7,7 +7,6 @@
 
 project-name=ml-api-template
 DOCKER_IMAGE_NAME=workshop-ml-api-template
-python-version=3.8
 
 inputdataconfig_file=ml/input/config/inputdataconfig.json
 inputdataconfig=`cat ${inputdataconfig_file}`
