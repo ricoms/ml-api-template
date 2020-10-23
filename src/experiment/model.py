@@ -39,7 +39,7 @@ class ProjectModel(MLModel):
         return "divorce"
 
     def save(self, model_prefix):
-        self.model_path = model_prefix / self.model_id / 'model.joblib'
+        self.model_path = model_prefix / 'model.joblib'
         joblib.dump(self.model, self.model_path)
         return self.model_path
 

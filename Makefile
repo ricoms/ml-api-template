@@ -27,7 +27,7 @@ data:
 	cd ml/input/data/training/ && unrar e divorce.rar
 	cd ml/input/data/training/ && rm divorce.rar && rm divorce.xlsx
 
-train: build-image
+train: build-image ml/input/data/training/divorce.csv
 	docker run --rm \
 		-u ${CURRENT_UID}:${CURRENT_UID} \
 		-v ${PWD}/ml:/opt/ml \
@@ -40,7 +40,7 @@ serve: build-image
 		-v $(PWD)/ml:/opt/ml \
 		-p 8080:8080 \
 		${DOCKER_IMAGE_NAME} \
-			python serve \
+			serve \
 				--num_cpus=1
 
 predict:
