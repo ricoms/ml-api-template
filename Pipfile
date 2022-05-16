@@ -20,7 +20,7 @@ jsonschema = "==3.2.0"
 dataclasses = "==0.6"
 fsspec = "==0.5.1"
 joblib = "==0.14.0"
-numpy = "==1.17.2"
+numpy = "==1.21.0"
 scipy = "==1.4.1"
 h5py = "==2.10.0"
 dask = {extras = ["dataframe"], version = "==2.3.0"}
